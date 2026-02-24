@@ -17,7 +17,15 @@ class PesananController extends Controller
         $search = $request->query('search');
         $status = $request->query('status');
 
-        $query = tpemesanan::query();
+        $isAdmin = Auth::user() && Auth::user()->role === 'admin';
+
+        if ($isAdmin) {
+            $query = tpemesanan::query();
+            $view = 'admin.pesanan.index';
+        } else {
+            $query = tpemesanan::where('id_konsumen', Auth::id());
+            $view = 'user.pesanan.index';
+        }
 
         // Filter by status if provided
         if ($status && $status !== 'semua') {
@@ -34,15 +42,25 @@ class PesananController extends Controller
 
         $pesanan = $query->orderBy('tanggal', 'desc')->get();
 
-        return view('user.pesanan.index', compact('pesanan', 'search', 'status'));
+        return view($view, compact('pesanan', 'search', 'status'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('pesanan.create');
+        $id_produk = $request->query('id_produk');
+        if (!$id_produk) {
+            return redirect()->route('user.katalog.index')->with('error', 'Pilih produk terlebih dahulu.');
+        }
+
+        $produk = \App\Models\tproduk::findOrFail($id_produk);
+        $jumlah = $request->query('jumlah', 1);
+        $keterangan = $request->query('keterangan', '');
+        $total = $produk->harga * $jumlah;
+
+        return view('pesanan.create', compact('produk', 'jumlah', 'keterangan', 'total'));
     }
 
     /**
@@ -50,6 +68,15 @@ class PesananController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::info('Checkout Request Data:', $request->all());
+
+        // Ensure total_biaya is strictly a numeric value before validation
+        if ($request->has('total_biaya')) {
+            $request->merge([
+                'total_biaya' => preg_replace('/[^0-9]/', '', $request->total_biaya)
+            ]);
+        }
+
         $request->validate([
             'id_konsumen' => 'required|exists:users,id',
             'tanggal' => 'required|date',
@@ -57,9 +84,29 @@ class PesananController extends Controller
             'total_biaya' => 'required|numeric',
         ]);
 
-        tpemesanan::create($request->all());
+        // Generate a random ID for id_pemesanan (assuming it's a numeric ID based on decimal type)
+        $generateId = rand(100000, 999999);
 
-        return redirect()->route('pesanan.index')->with('success', 'Pesanan berhasil ditambahkan');
+        // Create the main order
+        $pesanan = tpemesanan::create([
+            'id_pemesanan' => $generateId,
+            'id_konsumen' => $request->id_konsumen,
+            'tanggal' => $request->tanggal,
+            'status' => $request->status,
+            'total_biaya' => $request->total_biaya,
+        ]);
+
+        // Save order details to tdeskpemesanan
+        if ($request->has('id_produk') && $request->has('jumlah') && $request->has('harga')) {
+            tdeskpemesanan::create([
+                'id_pemesanan' => $pesanan->id,
+                'id_produk' => $request->id_produk,
+                'jumlah' => $request->jumlah,
+                'harga' => $request->harga,
+            ]);
+        }
+
+        return redirect()->route('user.pesanan.index')->with('success', 'Pesanan berhasil ditambahkan');
     }
 
     /**
@@ -68,7 +115,11 @@ class PesananController extends Controller
     public function show(tpemesanan $pesanan)
     {
         $detailPesanan = tdeskpemesanan::where('id_pemesanan', $pesanan->id)->get();
-        return view('pesanan.show', compact('pesanan', 'detailPesanan'));
+
+        $isAdmin = Auth::user() && Auth::user()->role === 'admin';
+        $view = $isAdmin ? 'admin.pesanan.show' : 'pesanan.show';
+
+        return view($view, compact('pesanan', 'detailPesanan'));
     }
 
     /**
@@ -76,7 +127,10 @@ class PesananController extends Controller
      */
     public function edit(tpemesanan $pesanan)
     {
-        return view('pesanan.edit', compact('pesanan'));
+        $isAdmin = Auth::user() && Auth::user()->role === 'admin';
+        $view = $isAdmin ? 'admin.pesanan.edit' : 'pesanan.edit';
+
+        return view($view, compact('pesanan'));
     }
 
     /**
@@ -92,7 +146,10 @@ class PesananController extends Controller
             'status' => $request->status
         ]);
 
-        return redirect()->route('pesanan.show', $pesanan->id)->with('success', 'Status pesanan berhasil diperbarui');
+        $isAdmin = Auth::user() && Auth::user()->role === 'admin';
+        $route = $isAdmin ? 'admin.pesanan.show' : 'user.pesanan.show';
+
+        return redirect()->route($route, $pesanan->id)->with('success', 'Status pesanan berhasil diperbarui');
     }
 
     /**
@@ -105,6 +162,9 @@ class PesananController extends Controller
 
         $pesanan->delete();
 
-        return redirect()->route('pesanan.index')->with('success', 'Pesanan berhasil dihapus');
+        $isAdmin = Auth::user() && Auth::user()->role === 'admin';
+        $route = $isAdmin ? 'admin.pesanan.index' : 'user.pesanan.index';
+
+        return redirect()->route($route)->with('success', 'Pesanan berhasil dihapus');
     }
 }

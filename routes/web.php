@@ -52,6 +52,7 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
     Route::get('/pesanan/create', [PesananController::class, 'create'])->name('pesanan.create');
     Route::post('/pesanan', [PesananController::class, 'store'])->name('pesanan.store');
     Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
+    Route::delete('/pesanan/{pesanan}', [PesananController::class, 'destroy'])->name('pesanan.destroy');
 
     // Profil Saya
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');

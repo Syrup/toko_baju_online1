@@ -6,7 +6,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('pesanan.index') }}" style="text-decoration: none; color: #667eea;">
+                <a href="{{ route('user.pesanan.index') }}" style="text-decoration: none; color: #667eea;">
                     <i class="fas fa-arrow-left" style="font-size: 1.5rem;"></i>
                 </a>
                 <div>
@@ -183,7 +183,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex gap-2">
-                <a href="{{ route('pesanan.index') }}" 
+                <a href="{{ route('user.pesanan.index') }}" 
                    class="btn btn-outline-secondary btn-lg" 
                    style="border-color: #ddd; color: #666; font-weight: 600; flex-grow-1; transition: all 0.3s ease;"
                    onmouseover="this.style.backgroundColor='#f8f9fa';"
@@ -223,7 +223,7 @@
             </div>
             <div class="modal-footer border-top" style="padding: 1rem;">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-color: #ddd;">Tidak</button>
-                <form action="{{ route('pesanan.destroy', $pesanan->id) }}" method="POST" style="display: inline;">
+                <form action="{{ route('user.pesanan.destroy', $pesanan->id) }}" method="POST" style="display: inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger" 

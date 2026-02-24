@@ -150,7 +150,7 @@
                                         </td>
                                         <td style="color: #666; padding: 1.2rem; border: none; text-align: center;">
                                             <div class="d-flex justify-content-center gap-2">
-                                                <a href="{{ route('pesanan.show', $p->id) }}" 
+                                                <a href="{{ route('user.pesanan.show', $p->id) }}" 
                                                    class="btn btn-sm btn-outline-primary" 
                                                    style="border-color: #667eea; color: #667eea; font-weight: 500; transition: all 0.3s ease; padding: 0.4rem 0.8rem;">
                                                     <i class="fas fa-eye"></i>
@@ -261,6 +261,9 @@
 </style>
 
 <script>
+    // Remove temporary order data if we successfully landed here after checkout
+    localStorage.removeItem('pesanan_temp');
+
     let idPesananBatalkan = null;
 
     function batalkanPesanan(id) {
@@ -273,7 +276,7 @@
 
     document.getElementById('formBatalkan').addEventListener('submit', function(e) {
         if (idPesananBatalkan) {
-            this.action = `/pesanan/${idPesananBatalkan}`;
+            this.action = `/user/pesanan/${idPesananBatalkan}`;
         }
     });
 </script>

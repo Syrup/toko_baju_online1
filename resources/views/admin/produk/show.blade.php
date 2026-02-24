@@ -79,19 +79,20 @@
                         </div>
 
                         <!-- Form Pemesanan -->
-                        <div class="mb-4">
+                        <form action="{{ route('user.pesanan.create') }}" method="GET" class="mb-4">
+                            <input type="hidden" name="id_produk" value="{{ $tproduk->id }}">
                             <!-- Jumlah Pembelian -->
                             <div class="mb-3">
                                 <label class="form-label" style="font-weight: 600; color: #333; margin-bottom: 0.5rem;">
                                     <i class="fas fa-shopping-bag me-2" style="color: #667eea;"></i>Jumlah Pembelian
                                 </label>
                                 <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                    <button class="btn btn-outline-secondary" onclick="decreaseQty()"
+                                    <button type="button" class="btn btn-outline-secondary" onclick="decreaseQty()"
                                         style="width: 45px; padding: 0;">−</button>
-                                    <input type="number" id="jumlahBeli" class="form-control" value="1" min="1" max="100"
-                                        onchange="hitungTotal()" onkeyup="hitungTotal()"
+                                    <input type="number" id="jumlahBeli" name="jumlah" class="form-control" value="1"
+                                        min="1" max="100" onchange="hitungTotal()" onkeyup="hitungTotal()"
                                         style="text-align: center; width: 70px; border: 1px solid #ddd;">
-                                    <button class="btn btn-outline-secondary" onclick="increaseQty()"
+                                    <button type="button" class="btn btn-outline-secondary" onclick="increaseQty()"
                                         style="width: 45px; padding: 0;">+</button>
                                 </div>
                             </div>
@@ -101,46 +102,45 @@
                                 <label class="form-label" style="font-weight: 600; color: #333; margin-bottom: 0.5rem;">
                                     <i class="fas fa-note-sticky me-2" style="color: #667eea;"></i>Keterangan (Opsional)
                                 </label>
-                                <textarea id="keterangan" class="form-control" rows="3"
+                                <textarea id="keterangan" name="keterangan" class="form-control" rows="3"
                                     placeholder="Contoh: Ukuran M, warna hitam, atau catatan khusus lainnya..."
                                     style="border: 1px solid #ddd; border-radius: 8px;"></textarea>
                             </div>
-                        </div>
 
-                        <!-- Total Harga Summary -->
-                        <div class="mb-4 p-3 rounded"
-                            style="background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%); border-left: 4px solid #667eea;">
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #666;">Subtotal:</span>
-                                <span style="font-weight: 600; color: #333;">Rp <span
-                                        id="subtotal">{{ number_format($tproduk->harga, 0, ',', '.') }}</span></span>
+                            <!-- Total Harga Summary -->
+                            <div class="mb-4 p-3 rounded"
+                                style="background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%); border-left: 4px solid #667eea;">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <span style="color: #666;">Subtotal:</span>
+                                    <span style="font-weight: 600; color: #333;">Rp <span
+                                            id="subtotal">{{ number_format($tproduk->harga, 0, ',', '.') }}</span></span>
+                                </div>
+                                <hr style="margin: 0.5rem 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-weight: 700; color: #333; font-size: 1.1rem;">Total:</span>
+                                    <span style="font-weight: 700; color: #667eea; font-size: 1.3rem;">Rp <span
+                                            id="totalHarga">{{ number_format($tproduk->harga, 0, ',', '.') }}</span></span>
+                                </div>
                             </div>
-                            <hr style="margin: 0.5rem 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-weight: 700; color: #333; font-size: 1.1rem;">Total:</span>
-                                <span style="font-weight: 700; color: #667eea; font-size: 1.3rem;">Rp <span
-                                        id="totalHarga">{{ number_format($tproduk->harga, 0, ',', '.') }}</span></span>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg"
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; font-weight: 600; padding: 0.8rem; transition: all 0.3s ease;"
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 25px rgba(102, 126, 234, 0.4)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
+                                    <i class="fas fa-shopping-cart me-2"></i>Pesan Sekarang
+                                </button>
+
+                                <a href="{{ route('admin.produk.index') }}" class="btn btn-outline-secondary btn-lg"
+                                    style="font-weight: 600; padding: 0.8rem; transition: all 0.3s ease;"
+                                    onmouseover="this.style.backgroundColor='#f0f0f0'"
+                                    onmouseout="this.style.backgroundColor='transparent'">
+                                    <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar Produk
+                                </a>
                             </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary btn-lg"
-                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; font-weight: 600; padding: 0.8rem; transition: all 0.3s ease;"
-                                onclick="pesanProduk()"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 25px rgba(102, 126, 234, 0.4)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
-                                <i class="fas fa-shopping-cart me-2"></i>Pesan Sekarang
-                            </button>
-
-                            <a href="{{ route('admin.produk.index') }}" class="btn btn-outline-secondary btn-lg"
-                                style="font-weight: 600; padding: 0.8rem; transition: all 0.3s ease;"
-                                onmouseover="this.style.backgroundColor='#f0f0f0'"
-                                onmouseout="this.style.backgroundColor='transparent'">
-                                <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar Produk
-                            </a>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -233,28 +233,5 @@
 
         document.getElementById('jumlahBeli').addEventListener('change', hitungTotal);
         document.getElementById('jumlahBeli').addEventListener('keyup', hitungTotal);
-
-        function pesanProduk() {
-            const jumlah = document.getElementById('jumlahBeli').value;
-            const keterangan = document.getElementById('keterangan').value;
-
-            if (jumlah < 1) {
-                alert('Jumlah minimal 1');
-                return;
-            }
-
-            const pesanan = {
-                id_produk: {{ $tproduk->id }},
-                nama_produk: "{{ addslashes($tproduk->nama_produk) }}",
-                harga: harga,
-                jumlah: jumlah,
-                keterangan: keterangan,
-                total: harga * jumlah
-            };
-
-            localStorage.setItem('pesanan_temp', JSON.stringify(pesanan));
-            alert('Pesanan ditambahkan! Silakan lanjut ke checkout.');
-            window.location.href = '{{ route("produk.index") }}';
-        }
     </script>
 @endsection

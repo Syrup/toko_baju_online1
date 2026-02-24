@@ -157,52 +157,54 @@
     @endif
 </div>
 
-<!-- Modal Order -->
 <div class="modal fade" id="modalPesanan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0">
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
-                <h5 class="modal-title" style="font-weight: 600;">
-                    <i class="fas fa-shopping-cart me-2"></i>Pesan Produk
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="mb-3">
-                    <label style="font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block;">Produk</label>
-                    <p id="modalProdukNama" style="color: #666; margin: 0;"></p>
+            <form action="{{ route('user.pesanan.create') }}" method="GET">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                    <h5 class="modal-title" style="font-weight: 600;">
+                        <i class="fas fa-shopping-cart me-2"></i>Pesan Produk
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="row">
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label style="font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block;">Harga</label>
-                            <p id="modalProdukHarga" style="color: #667eea; font-weight: 600; margin: 0;"></p>
+                <div class="modal-body p-4">
+                    <input type="hidden" name="id_produk" id="form_id_produk">
+                    <div class="mb-3">
+                        <label style="font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block;">Produk</label>
+                        <p id="modalProdukNama" style="color: #666; margin: 0;"></p>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label style="font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block;">Harga</label>
+                                <p id="modalProdukHarga" style="color: #667eea; font-weight: 600; margin: 0;"></p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="jumlahBeli" style="font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block;">Jumlah</label>
+                                <input type="number" id="jumlahBeli" name="jumlah" class="form-control" value="1" min="1" style="border-color: #ddd;">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <label for="jumlahBeli" style="font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block;">Jumlah</label>
-                            <input type="number" id="jumlahBeli" class="form-control" value="1" min="1" style="border-color: #ddd;">
-                        </div>
+                    <div class="mb-3">
+                        <label for="keterangan" style="font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block;">Keterangan (Opsional)</label>
+                        <textarea id="keterangan" name="keterangan" class="form-control" rows="3" placeholder="Masukkan keterangan pesanan Anda..." style="border-color: #ddd;"></textarea>
+                    </div>
+                    <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p style="font-size: 0.9rem; color: #666; margin: 0;">
+                            <strong style="color: #333;">Total:</strong> Rp <span id="totalHarga">0</span>
+                        </p>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="keterangan" style="font-weight: 600; color: #333; margin-bottom: 0.5rem; display: block;">Keterangan (Opsional)</label>
-                    <textarea id="keterangan" class="form-control" rows="3" placeholder="Masukkan keterangan pesanan Anda..." style="border-color: #ddd;"></textarea>
+                <div class="modal-footer border-top" style="padding: 1rem;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-color: #ddd;">Batal</button>
+                    <button type="submit" class="btn btn-primary" id="btnKonfirmasi" 
+                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                        <i class="fas fa-check me-2"></i>Lanjutkan Pesanan
+                    </button>
                 </div>
-                <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <p style="font-size: 0.9rem; color: #666; margin: 0;">
-                        <strong style="color: #333;">Total:</strong> Rp <span id="totalHarga">0</span>
-                    </p>
-                </div>
-            </div>
-            <div class="modal-footer border-top" style="padding: 1rem;">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-color: #ddd;">Batal</button>
-                <button type="button" class="btn btn-primary" id="btnKonfirmasi" 
-                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
-                    <i class="fas fa-check me-2"></i>Lanjutkan Pesanan
-                </button>
-            </div>
+            </form>
         </div>
     </div>
 </div>
@@ -242,6 +244,7 @@
     function tambahPesanan(id, nama, harga) {
         produkPesanan = { id, nama, harga };
         
+        document.getElementById('form_id_produk').value = id;
         document.getElementById('modalProdukNama').innerText = nama;
         document.getElementById('modalProdukHarga').innerText = 'Rp ' + harga.toLocaleString('id-ID');
         document.getElementById('jumlahBeli').value = 1;
@@ -261,29 +264,5 @@
 
     document.getElementById('jumlahBeli').addEventListener('change', hitungTotal);
     document.getElementById('jumlahBeli').addEventListener('keyup', hitungTotal);
-
-    document.getElementById('btnKonfirmasi').addEventListener('click', function() {
-        const jumlah = document.getElementById('jumlahBeli').value;
-        const keterangan = document.getElementById('keterangan').value;
-        
-        if (jumlah < 1) {
-            alert('Jumlah harus minimal 1');
-            return;
-        }
-
-        // Simpan data ke localStorage untuk sementara
-        const pesanan = {
-            id_produk: produkPesanan.id,
-            nama_produk: produkPesanan.nama,
-            harga: produkPesanan.harga,
-            jumlah: jumlah,
-            keterangan: keterangan
-        };
-
-        localStorage.setItem('pesanan_temp', JSON.stringify(pesanan));
-
-        alert('Pesanan ditambahkan! Silakan lanjutkan ke checkout.');
-        bootstrap.Modal.getInstance(document.getElementById('modalPesanan')).hide();
-    });
 </script>
 @endsection

@@ -56,31 +56,35 @@ class TprodukController extends Controller
             'foto' => $request->foto ? $request->file('foto')->store('produk', 'public') : null,
         ]);
 
-        return redirect()->route('produk.index')
+        return redirect()->route('admin.produk.index')
             ->with('success', 'Produk berhasil ditambahkan.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(tproduk $tproduk)
+    public function show($id)
     {
+        $tproduk = tproduk::findOrFail($id);
         return view('admin.produk.show', compact('tproduk'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(tproduk $tproduk)
+    public function edit($id)
     {
+        $tproduk = tproduk::findOrFail($id);
         return view('admin.produk.edit', compact('tproduk'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, tproduk $tproduk)
+    public function update(Request $request, $id)
     {
+        $tproduk = tproduk::findOrFail($id);
+
         $request->validate([
             'nama_produk' => 'required|string|max:255',
             'deskripsi' => 'required|string',
@@ -105,8 +109,12 @@ class TprodukController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(tproduk $tproduk)
+    public function destroy($id)
     {
-        //
+        $tproduk = tproduk::findOrFail($id);
+        $tproduk->delete();
+
+        return redirect()->route('admin.produk.index')
+            ->with('success', 'Produk berhasil dihapus.');
     }
 }

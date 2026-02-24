@@ -273,7 +273,7 @@
 
     document.getElementById('formBatalkan').addEventListener('submit', function(e) {
         if (idPesananBatalkan) {
-            this.action = `/pesanan/${idPesananBatalkan}`;
+            this.action = `/admin/pesanan/${idPesananBatalkan}`;
         }
     });
 </script>
